@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import argparse
+from datetime import UTC, datetime
 from pathlib import Path
 
 from ai_info_collection.evaluation import evaluate_merge, generate_replay_dataset
 from ai_info_collection.fetch import fetch_sources, seed_sources
 from ai_info_collection.ingest import ingest_signals
 from ai_info_collection.merge import merge_events
-from ai_info_collection.pipeline import run_pipeline
+from ai_info_collection.pipeline import PipelineRunResult, run_pipeline
 from ai_info_collection.storage import SQLiteStore
 from ai_info_collection.ui import start_ui
 
@@ -132,7 +133,12 @@ def cmd_run_pipeline(
         source_id=source_id,
         fetch_dry_run=fetch_dry_run,
     )
-    print("== Run Pipeline ==")
+    _print_pipeline_summary("Run Pipeline", result, dry_run=dry_run, fetch_dry_run=fetch_dry_run)
+    return result.exit_code
+
+
+def _print_pipeline_summary(title: str, result: PipelineRunResult, dry_run: bool, fetch_dry_run: bool) -> None:
+    print(f"== {title} ==")
     print(f"run_id={result.run_id}")
     print(f"status={result.status}")
     print(f"status_reason={result.status_reason}")
@@ -152,6 +158,85 @@ def cmd_run_pipeline(
     print(f"error_count={result.error_count}")
     if result.status_reason in {"concurrent_run_blocked", "duplicate_run_blocked"}:
         print(f"blocked_by={result.status_reason}")
+
+
+def _resolve_start_mode(mode: str | None) -> str:
+    if mode in {"offline", "online"}:
+        return mode
+    print("Choose startup mode:")
+    print("1) offline  (use sample.jsonl)")
+    print("2) online   (seed official sources then fetch)")
+    try:
+        answer = input("Select mode [1/2, default 1]: ").strip().lower()
+    except EOFError:
+        answer = ""
+    mapping = {
+        "1": "offline",
+        "offline": "offline",
+        "2": "online",
+        "online": "online",
+    }
+    resolved = mapping.get(answer, "offline")
+    if answer and answer not in mapping:
+        print("Invalid choice, fallback to offline.")
+    return resolved
+
+
+def cmd_start(
+    store: SQLiteStore,
+    mode: str | None,
+    source_limit: int,
+    merge_limit: int,
+    dry_run: bool,
+    fetch_log_limit: int,
+    force_new_db: bool,
+) -> int:
+    resolved_mode = _resolve_start_mode(mode)
+    run_store = store
+    if resolved_mode == "online":
+        if force_new_db:
+            print("force_new_db_ignored=True (online mode)")
+        seeded = seed_sources(store=store, preset="official-ai")
+        print(f"seeded_sources={seeded}")
+        result = run_pipeline(
+            store=run_store,
+            input_path=None,
+            merge_limit=merge_limit,
+            dry_run=dry_run,
+            source_limit=source_limit,
+            source_id=None,
+            fetch_dry_run=False,
+        )
+    else:
+        if force_new_db:
+            base = Path(store.db_path)
+            timestamp = datetime.now(UTC).strftime("%Y%m%d%H%M%S")
+            suffix = "".join(base.suffixes) or ".db"
+            stem = base.name[:-len(suffix)] if base.name.endswith(suffix) else base.stem
+            fresh_name = f"{stem}.offline.{timestamp}{suffix}"
+            fresh_path = base.with_name(fresh_name)
+            run_store = SQLiteStore(fresh_path)
+            run_store.initialize()
+            print(f"using_new_db={run_store.db_path}")
+        input_path = Path("sample.jsonl")
+        if not input_path.exists():
+            print("sample.jsonl not found in repository root.")
+            return 1
+        result = run_pipeline(
+            store=run_store,
+            input_path=str(input_path),
+            merge_limit=merge_limit,
+            dry_run=dry_run,
+            source_limit=source_limit,
+            source_id=None,
+            fetch_dry_run=False,
+        )
+
+    _print_pipeline_summary("Start", result, dry_run=dry_run, fetch_dry_run=False)
+    print()
+    print("== Recent Fetch Logs ==")
+    rows = run_store.list_recent_fetch_runs(limit=fetch_log_limit)
+    print(_format_rows(rows, ["run_id", "source_id", "fetched", "parsed", "failed", "status", "finished_at"]))
     return result.exit_code
 
 
@@ -271,6 +356,18 @@ def build_parser() -> argparse.ArgumentParser:
     recent_fetch = subparsers.add_parser("recent-fetch-runs", help="Show recent fetch run history")
     recent_fetch.add_argument("--limit", type=int, default=10)
 
+    start_cmd = subparsers.add_parser("start", help="One-command startup for offline/online main flow")
+    start_cmd.add_argument("--mode", choices=["offline", "online"], help="Startup mode; prompt once if omitted")
+    start_cmd.add_argument("--source-limit", type=int, default=5, help="Source limit for online mode")
+    start_cmd.add_argument("--merge-limit", type=int, default=100)
+    start_cmd.add_argument("--dry-run", action="store_true")
+    start_cmd.add_argument("--fetch-log-limit", type=int, default=10)
+    start_cmd.add_argument(
+        "--force-new-db",
+        action="store_true",
+        help="Offline mode only: use a fresh timestamped database file to avoid stale run locks",
+    )
+
     replay_cmd = subparsers.add_parser("generate-replay-dataset", help="Generate synthetic replay dataset with labels")
     replay_cmd.add_argument("--output", required=True, help="Output JSONL path")
     replay_cmd.add_argument("--rows", type=int, default=1000)
@@ -324,6 +421,16 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_seed_sources(store, args.preset)
     if args.command == "recent-fetch-runs":
         return cmd_recent_fetch_runs(store, args.limit)
+    if args.command == "start":
+        return cmd_start(
+            store=store,
+            mode=args.mode,
+            source_limit=args.source_limit,
+            merge_limit=args.merge_limit,
+            dry_run=args.dry_run,
+            fetch_log_limit=args.fetch_log_limit,
+            force_new_db=args.force_new_db,
+        )
     if args.command == "generate-replay-dataset":
         return cmd_generate_replay_dataset(args.output, args.rows, args.seed)
     if args.command == "evaluate-merge":

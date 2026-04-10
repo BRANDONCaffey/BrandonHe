@@ -289,3 +289,33 @@ Step 2:
   - 当前已修 source 配置只能在网络恢复后验证真实抓取成功率与 selector 质量。
 - exact next step:
   - 修复本机 DNS/网络后，重新执行 `fetch-sources --source-limit 5` 与 `run-pipeline --source-limit 5`，并确认 `fetch_runs` 至少 1 条 `status=success`。
+
+## Milestone 9.2 状态（worker）
+
+- milestone status: completed (二选一启动入口 + 一键主流程 + 抓取日志直出)
+- files changed:
+  - src/ai_info_collection/cli.py
+  - tests/test_fetch_pipeline.py
+  - README.md
+  - docs/Plan.md
+- commands/results:
+  - command: `PYTHONPATH=src python3 -m unittest discover -s tests -v`
+    result: `通过（Ran 35 tests, OK）`
+  - command: `PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./m9_2_check.db start --mode offline`
+    result: `通过（退出码 0；status=success，离线 sample.jsonl 一键可跑）`
+  - command: `PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mode offline`
+    result: `失败（退出码 1；status_reason=concurrent_run_blocked，受现有 data.db 运行锁状态影响）`
+  - command: `PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mode online --source-limit 5`
+    result: `失败（退出码 1；DNS 解析失败导致 fetch_failed=4, ingest_no_success）`
+  - command: `PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mode offline --force-new-db`
+    result: `通过（退出码 0；自动切换时间戳新库，规避旧锁状态）`
+- decisions:
+  - 新增 `start` 命令作为统一入口，支持 `--mode offline|online`，未传时终端一次性选择。
+  - 离线模式固定 `sample.jsonl`；在线模式先幂等执行 `seed-sources --preset official-ai` 再跑主流程。
+  - 新增 `--force-new-db`（仅离线模式有效），用于自动切换新库规避历史锁。
+  - `start` 执行后固定输出 run summary + `recent fetch logs`，不改现有 `run-pipeline/seed-sources/recent-fetch-runs` 契约。
+- known risks:
+  - `data.db` 里若存在活跃运行记录，`start` 可能被并发保护阻断（非功能回归）。
+  - 在线模式仍受当前机器 DNS 网络阻断影响，抓取可能全失败。
+- exact next step:
+  - 清理/等待当前 `data.db` 运行锁窗口后重试 `start --mode offline`，并在网络恢复后复测 `start --mode online --source-limit 5`。

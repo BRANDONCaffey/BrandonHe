@@ -5,11 +5,14 @@ import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import ANY, patch
 
 from ai_info_collection.cli import main
 from ai_info_collection.fetch import FetchStats
+from ai_info_collection.ingest import IngestStats
+from ai_info_collection.merge import MergeStats
 from ai_info_collection.models import SignalInput
+from ai_info_collection.pipeline import PipelineRunResult
 from ai_info_collection.storage import SQLiteStore
 
 
@@ -93,6 +96,113 @@ class FetchPipelineTests(unittest.TestCase):
         self.assertEqual(run_row["fetch_total"], 1)
         self.assertEqual(run_row["fetch_success"], 1)
         self.assertEqual(run_row["fetch_failed"], 0)
+
+    def test_start_offline_uses_sample_jsonl_and_prints_fetch_logs(self) -> None:
+        fake_result = PipelineRunResult(
+            run_id="run-offline",
+            status="success",
+            status_reason=None,
+            fetch_stats=FetchStats(),
+            ingest_stats=IngestStats(total=2, success=2, skipped_duplicates=0, failed=0),
+            merge_stats=MergeStats(processed=2, matched_by_hint=0, matched_by_rule=1, created_new=1),
+            error_count=0,
+            exit_code=0,
+        )
+        output = io.StringIO()
+        with patch("ai_info_collection.cli.run_pipeline", return_value=fake_result) as mocked_pipeline:
+            with redirect_stdout(output):
+                code = main(["--db-path", str(self.db_path), "start", "--mode", "offline"])
+
+        self.assertEqual(code, 0)
+        call_kwargs = mocked_pipeline.call_args.kwargs
+        self.assertEqual(call_kwargs["input_path"], "sample.jsonl")
+        self.assertIn("== Start ==", output.getvalue())
+        self.assertIn("== Recent Fetch Logs ==", output.getvalue())
+        self.assertIn("run_id=run-offline", output.getvalue())
+
+    def test_start_online_seeds_sources_then_runs_pipeline(self) -> None:
+        fake_result = PipelineRunResult(
+            run_id="run-online",
+            status="success",
+            status_reason=None,
+            fetch_stats=FetchStats(total_sources=4, success_sources=3, failed_sources=1, fetched_items=12, parsed_items=8),
+            ingest_stats=IngestStats(total=8, success=8, skipped_duplicates=0, failed=0),
+            merge_stats=MergeStats(processed=8, matched_by_hint=2, matched_by_rule=3, created_new=3),
+            error_count=0,
+            exit_code=0,
+        )
+        output = io.StringIO()
+        with patch("ai_info_collection.cli.seed_sources", return_value=4) as mocked_seed:
+            with patch("ai_info_collection.cli.run_pipeline", return_value=fake_result) as mocked_pipeline:
+                with redirect_stdout(output):
+                    code = main(
+                        [
+                            "--db-path",
+                            str(self.db_path),
+                            "start",
+                            "--mode",
+                            "online",
+                            "--source-limit",
+                            "3",
+                        ]
+                    )
+
+        self.assertEqual(code, 0)
+        mocked_seed.assert_called_once_with(store=ANY, preset="official-ai")
+        call_kwargs = mocked_pipeline.call_args.kwargs
+        self.assertIsNone(call_kwargs["input_path"])
+        self.assertEqual(call_kwargs["source_limit"], 3)
+        self.assertIn("seeded_sources=4", output.getvalue())
+        self.assertIn("run_id=run-online", output.getvalue())
+
+    def test_start_without_mode_prompts_once_and_routes_to_online(self) -> None:
+        fake_result = PipelineRunResult(
+            run_id="run-interactive",
+            status="success",
+            status_reason=None,
+            fetch_stats=FetchStats(total_sources=1, success_sources=1, failed_sources=0, fetched_items=2, parsed_items=2),
+            ingest_stats=IngestStats(total=2, success=2, skipped_duplicates=0, failed=0),
+            merge_stats=MergeStats(processed=2, matched_by_hint=1, matched_by_rule=0, created_new=1),
+            error_count=0,
+            exit_code=0,
+        )
+        with patch("builtins.input", return_value="2"):
+            with patch("ai_info_collection.cli.seed_sources", return_value=4):
+                with patch("ai_info_collection.cli.run_pipeline", return_value=fake_result) as mocked_pipeline:
+                    code = main(["--db-path", str(self.db_path), "start"])
+        self.assertEqual(code, 0)
+        self.assertIsNone(mocked_pipeline.call_args.kwargs["input_path"])
+
+    def test_start_offline_force_new_db_uses_fresh_store(self) -> None:
+        fake_result = PipelineRunResult(
+            run_id="run-fresh-db",
+            status="success",
+            status_reason=None,
+            fetch_stats=FetchStats(),
+            ingest_stats=IngestStats(total=2, success=2, skipped_duplicates=0, failed=0),
+            merge_stats=MergeStats(processed=2, matched_by_hint=0, matched_by_rule=0, created_new=2),
+            error_count=0,
+            exit_code=0,
+        )
+        output = io.StringIO()
+        with patch("ai_info_collection.cli.run_pipeline", return_value=fake_result) as mocked_pipeline:
+            with redirect_stdout(output):
+                code = main(
+                    [
+                        "--db-path",
+                        str(self.db_path),
+                        "start",
+                        "--mode",
+                        "offline",
+                        "--force-new-db",
+                    ]
+                )
+        self.assertEqual(code, 0)
+        used_store = mocked_pipeline.call_args.kwargs["store"]
+        self.assertNotEqual(Path(used_store.db_path), self.db_path)
+        self.assertIn(".offline.", Path(used_store.db_path).name)
+        self.assertTrue(Path(used_store.db_path).exists())
+        self.assertIn("using_new_db=", output.getvalue())
 
 
 if __name__ == "__main__":
