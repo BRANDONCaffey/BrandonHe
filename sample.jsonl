@@ -1,0 +1,2 @@
+{"source_id":"openai-news","url":"https://example.com/openai-1","title":"OpenAI ships new agent runtime","content":"OpenAI announced a new agent runtime and orchestration updates.","published_at":"2026-04-10T00:00:00+00:00","tags":["release","agent"],"lab_hint":"OpenAI"}
+{"source_id":"anthropic-news","url":"https://example.com/anthropic-1","title":"Anthropic updates safety policy","content":"Anthropic published a new safety policy and model behavior guidance.","published_at":"2026-04-11T00:00:00+00:00","tags":["policy","safety"],"lab_hint":"Anthropic"}

@@ -1,0 +1,2 @@
+"""AI Info Collection package."""
+

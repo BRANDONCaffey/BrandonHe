@@ -1,0 +1,15 @@
+.DS_Store
+.agents/
+.codex/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+data.db
+m7_fresh.db
+replay_1k.jsonl
