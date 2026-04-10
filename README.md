@@ -2,7 +2,38 @@
 
 最小可运行的 AI 信息采集与归并系统（支持离线导入与在线抓取）。
 
-## 快速开始（二选一）
+## 前端启动（推荐，无需 CLI）
+
+### 方式 1：开发态内嵌窗口（macOS）
+
+```bash
+PYTHONPATH=src python3 -m ai_info_collection.app_main
+```
+
+或：
+
+```bash
+PYTHONPATH=src python3 launch_frontend.py
+```
+
+启动后会自动拉起程序内嵌前端页面（不是系统浏览器）。
+
+### 方式 2：构建 macOS `.app`（双击启动）
+
+```bash
+./scripts/build_app.sh
+open "dist/AI Info Collection.app"
+```
+
+可选打包：
+
+```bash
+./scripts/package_app.sh
+```
+
+签名/公证流程骨架见 [docs/macOS-App-Distribution.md](docs/macOS-App-Distribution.md)。
+
+## 快速开始（CLI，兼容保留）
 
 ```bash
 # 离线模式（固定 sample.jsonl）

@@ -13,3 +13,7 @@ venv/
 data.db
 m7_fresh.db
 replay_1k.jsonl
+build/
+*.spec
+dist/*
+!dist/*.zip

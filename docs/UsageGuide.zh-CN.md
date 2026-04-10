@@ -18,9 +18,39 @@
 python3 -m pip install "scrapling[fetchers]>=0.3.0"
 ```
 
-## 3. 一键启动（推荐）
+## 3. macOS 应用启动（推荐）
 
-### 3.1 离线先跑通
+### 3.1 开发机构建 `.app`
+
+```bash
+./scripts/build_app.sh
+open "dist/AI Info Collection.app"
+```
+
+### 3.2 对外分发（zip）
+
+```bash
+./scripts/package_app.sh
+```
+
+输出示例：
+
+- `dist/AI-Info-Collection-<timestamp>.zip`
+
+### 3.3 下载者启动说明（首次）
+
+1. 解压 zip，得到 `AI Info Collection.app`
+2. 右键应用 -> `Open`
+3. 若被 Gatekeeper 拦截，执行：
+
+```bash
+xattr -dr com.apple.quarantine "AI Info Collection.app"
+open "AI Info Collection.app"
+```
+
+## 4. 一键启动（CLI，兼容保留）
+
+### 4.1 离线先跑通
 
 ```bash
 PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mode offline
@@ -34,7 +64,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mod
 
 这会自动切到一个时间戳新库，例如 `data.offline.20260410113000.db`，避免被旧库状态阻断。
 
-### 3.2 在线采集模式（有网时）
+### 4.2 在线采集模式（有网时）
 
 ```bash
 PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mode online --source-limit 5
@@ -45,7 +75,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mod
 2. 执行主流程（抓取 -> 入库 -> 归并）
 3. 打印抓取日志
 
-## 4. 输出怎么看
+## 5. 输出怎么看
 
 每次 `start` 结束会看到两段核心输出：
 - `== Start ==`：本次运行摘要（`run_id/status/fetch/ingest/merge`）
@@ -57,7 +87,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db start --mod
 - `fetch_success/fetch_failed`
 - `ingest_success/ingest_failed`
 
-## 5. 常用查看命令
+## 6. 常用查看命令
 
 ```bash
 PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db recent-fetch-runs --limit 10
@@ -66,7 +96,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db source-heal
 PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db review
 ```
 
-## 6. 本地 UI（离线可开）
+## 7. 本地 UI（离线可开）
 
 ```bash
 PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db ui --host 127.0.0.1 --port 8765 --offline
@@ -74,7 +104,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db ui --host 1
 
 浏览器访问：`http://127.0.0.1:8765`
 
-## 7. 常见问题
+## 8. 常见问题
 
 ### Q1：在线模式全失败
 
@@ -88,7 +118,7 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db ui --host 1
 
 旧库中可能存在运行锁状态。使用 `--force-new-db` 可立即绕过。
 
-## 8. 回归测试
+## 9. 回归测试
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v

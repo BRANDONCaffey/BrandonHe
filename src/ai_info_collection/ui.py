@@ -4,6 +4,7 @@ import html
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import Type
 
 from ai_info_collection.storage import SQLiteStore
 
@@ -271,7 +272,12 @@ PYTHONPATH=src python3 -m ai_info_collection.cli --db-path ./data.db review</pre
 """
 
 
-def start_ui(store: SQLiteStore, host: str = "127.0.0.1", port: int = 8765, offline_mode: bool = False) -> None:
+def create_ui_server(
+    store: SQLiteStore,
+    host: str = "127.0.0.1",
+    port: int = 8765,
+    offline_mode: bool = False,
+) -> ThreadingHTTPServer:
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self) -> None:  # noqa: N802
             if self.path not in ("/", "/index.html"):
@@ -290,7 +296,12 @@ def start_ui(store: SQLiteStore, host: str = "127.0.0.1", port: int = 8765, offl
         def log_message(self, format: str, *args: object) -> None:  # noqa: A003
             return
 
-    server = ThreadingHTTPServer((host, port), Handler)
+    handler_class: Type[BaseHTTPRequestHandler] = Handler
+    return ThreadingHTTPServer((host, port), handler_class)
+
+
+def start_ui(store: SQLiteStore, host: str = "127.0.0.1", port: int = 8765, offline_mode: bool = False) -> None:
+    server = create_ui_server(store=store, host=host, port=port, offline_mode=offline_mode)
     mode_text = " (offline mode)" if offline_mode else ""
     print(f"UI started at http://{host}:{port}{mode_text}")
     print("Press Ctrl+C to stop.")

@@ -11,6 +11,17 @@ dependencies = [
     "scrapling>=0.3.0",
 ]
 
+[project.optional-dependencies]
+app = [
+    "pywebview>=5.1",
+    "py2app>=0.28.8",
+    "pyinstaller>=6.10",
+    "setuptools<81",
+]
+
+[project.scripts]
+ai-info-app = "ai_info_collection.app_main:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
