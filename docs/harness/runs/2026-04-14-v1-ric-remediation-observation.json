@@ -1,0 +1,370 @@
+{
+  "run": {
+    "started_at": "2026-04-13T23:56:54Z",
+    "ended_at": "2026-04-14T00:06:54Z",
+    "duration_seconds": 600.164,
+    "interval_seconds": 10,
+    "samples": 60
+  },
+  "session_counts": {
+    "connected": 60
+  },
+  "metrics": {
+    "btcusd": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "us2y": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "us10y": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "gold": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "dxy": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "diesel_proxy": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "gasoline_proxy": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "es_fut": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    },
+    "nq_fut": {
+      "status_counts": {
+        "ok": 60
+      },
+      "nonnull_samples": 60
+    }
+  },
+  "records": [
+    {
+      "ts": "2026-04-13T23:56:56Z",
+      "elapsed_seconds": 0.0,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:05Z",
+      "elapsed_seconds": 10.0,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:15Z",
+      "elapsed_seconds": 20.01,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:25Z",
+      "elapsed_seconds": 30.01,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:35Z",
+      "elapsed_seconds": 40.01,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:45Z",
+      "elapsed_seconds": 50.02,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:57:55Z",
+      "elapsed_seconds": 60.02,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:05Z",
+      "elapsed_seconds": 70.02,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:15Z",
+      "elapsed_seconds": 80.02,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:25Z",
+      "elapsed_seconds": 90.03,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:35Z",
+      "elapsed_seconds": 100.03,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:45Z",
+      "elapsed_seconds": 110.04,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:58:55Z",
+      "elapsed_seconds": 120.04,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:05Z",
+      "elapsed_seconds": 130.04,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:15Z",
+      "elapsed_seconds": 140.05,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:25Z",
+      "elapsed_seconds": 150.05,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:35Z",
+      "elapsed_seconds": 160.05,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:45Z",
+      "elapsed_seconds": 170.06,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-13T23:59:55Z",
+      "elapsed_seconds": 180.06,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:06Z",
+      "elapsed_seconds": 190.06,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:15Z",
+      "elapsed_seconds": 200.07,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:25Z",
+      "elapsed_seconds": 210.07,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:35Z",
+      "elapsed_seconds": 220.07,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:45Z",
+      "elapsed_seconds": 230.07,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:00:55Z",
+      "elapsed_seconds": 240.08,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:06Z",
+      "elapsed_seconds": 250.08,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:15Z",
+      "elapsed_seconds": 260.08,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:25Z",
+      "elapsed_seconds": 270.09,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:39Z",
+      "elapsed_seconds": 280.09,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:45Z",
+      "elapsed_seconds": 290.09,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:01:55Z",
+      "elapsed_seconds": 300.09,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:05Z",
+      "elapsed_seconds": 310.1,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:15Z",
+      "elapsed_seconds": 320.1,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:25Z",
+      "elapsed_seconds": 330.1,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:35Z",
+      "elapsed_seconds": 340.1,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:45Z",
+      "elapsed_seconds": 350.11,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:02:55Z",
+      "elapsed_seconds": 360.11,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:05Z",
+      "elapsed_seconds": 370.11,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:15Z",
+      "elapsed_seconds": 380.12,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:25Z",
+      "elapsed_seconds": 390.12,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:35Z",
+      "elapsed_seconds": 400.12,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:45Z",
+      "elapsed_seconds": 410.12,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:03:55Z",
+      "elapsed_seconds": 420.13,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:05Z",
+      "elapsed_seconds": 430.13,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:15Z",
+      "elapsed_seconds": 440.13,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:25Z",
+      "elapsed_seconds": 450.13,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:35Z",
+      "elapsed_seconds": 460.13,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:45Z",
+      "elapsed_seconds": 470.14,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:04:55Z",
+      "elapsed_seconds": 480.14,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:05Z",
+      "elapsed_seconds": 490.14,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:15Z",
+      "elapsed_seconds": 500.15,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:25Z",
+      "elapsed_seconds": 510.15,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:36Z",
+      "elapsed_seconds": 520.15,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:45Z",
+      "elapsed_seconds": 530.16,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:05:55Z",
+      "elapsed_seconds": 540.16,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:06:05Z",
+      "elapsed_seconds": 550.16,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:06:15Z",
+      "elapsed_seconds": 560.17,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:06:25Z",
+      "elapsed_seconds": 570.17,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:06:35Z",
+      "elapsed_seconds": 580.17,
+      "session_status": "connected"
+    },
+    {
+      "ts": "2026-04-14T00:06:45Z",
+      "elapsed_seconds": 590.18,
+      "session_status": "connected"
+    }
+  ]
+}
